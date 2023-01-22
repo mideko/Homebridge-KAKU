@@ -1,1 +1,0 @@
-{"version":3,"file":"DimmableLightBulb.d.ts","sourceRoot":"","sources":["../src/DimmableLightBulb.ts"],"names":[],"mappings":"AAAA,OAAO,EAAC,SAAS,EAAC,MAAM,aAAa,CAAC;AACtC,OAAO,EAAC,YAAY,EAAC,MAAM,gBAAgB,CAAC;AAC5C,OAAO,EAAiC,iBAAiB,EAAC,MAAM,YAAY,CAAC;AAE7E,qBAAa,iBAAkB,SAAQ,SAAS;gBAE5C,QAAQ,EAAE,YAAY,EACtB,SAAS,EAAE,iBAAiB;YAiBhB,aAAa;YAWb,gBAAgB;CAS/B"}
