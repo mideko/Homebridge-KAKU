@@ -6,7 +6,7 @@ I've mainly extended some of the KaKu device types, in particular for RGB/Hue Li
 
 All in JS, not TypeScript.
 
-Requires the NPM module color-convert
+
 
 
 ## Description
@@ -23,7 +23,7 @@ Tested on IOS 14.
 3. Update your `config.json` file (see below)
 
 ## Dependencies
-
+Requires the NPM module color-convert
 
 
 ## Configuration
