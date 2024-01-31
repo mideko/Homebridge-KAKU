@@ -50,3 +50,6 @@ Tested on IOS 14.
  
  ### Configuration in Homekit
  After setting this up in Homebridge, you need to assign the new KAKU items to rooms
+
+ ## Known Issues
+- Color wheels are notiously tricky (due to different color mappings) so still needs some work
