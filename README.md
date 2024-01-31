@@ -27,9 +27,10 @@ Tested on IOS 14.
 
 
 ## Configuration
+Add the following entries to the platforms section:
 
 ```json
-"accessories": [
+"platforms": [
     {
         "name": "ICS2000",
         "email": "your_email@adres",
