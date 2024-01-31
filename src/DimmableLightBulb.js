@@ -5,11 +5,11 @@ const {LightBulb} = require("./LightBulb");
 class DimmableLightBulb extends LightBulb {
     constructor(platform, accessory) {
         super(platform, accessory);
-        // The Function for turning a dimmable lightbulb on or off is 3
+        // The Function for turning a dimmable zigbee lightbulb on or off is 3
         this.onOffCharacteristicFunction = 3;
         this.dimCharacteristicFunction = 4; //4
-        this.colorCharacteristicFunction = 5; //not implemented
-        this.lighttempCharacteristicFunction = 6; //not implemented
+        //this.colorCharacteristicFunction = 5; //not implemented here
+        //this.lighttempCharacteristicFunction = 6; //not implemented here
         this.service.getCharacteristic(this.platform.Characteristic.Brightness)
             .onGet(this.getBrightness.bind(this))
             .onSet(this.changeBrightness.bind(this))

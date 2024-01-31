@@ -3,8 +3,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.DimmableLightBulbRGB = void 0;
 
 const {DimmableLightBulbTemp} = require("./DimmableLightBulbTemp");
-const {ColorTools} = require("./ColorTools.js");
-const myColorTools = new ColorTools();
+//const {ColorTools} = require("./ColorTools.js");
+//const myColorTools = new ColorTools();
 
 class DimmableLightBulbRGB extends DimmableLightBulbTemp {
     constructor(platform, accessory) {
@@ -12,9 +12,9 @@ class DimmableLightBulbRGB extends DimmableLightBulbTemp {
         this.latestHueValue=1;
         this.latestSatValue=100;
         this.latestLightValue=50;
-        // The Functions for a lightbulb
-        this.onOffCharacteristicFunction = 3;
-        this.dimCharacteristicFunction = 4;
+        // The Functions for an RGB led lightbulb
+        //this.onOffCharacteristicFunction = 3;
+        //this.dimCharacteristicFunction = 4;
         this.colorCharacteristicFunction = 5;
         this.hueCharacteristicFunction = 6; //does not return any value?
         this.lightnessCharacteristicFunction = 7;
@@ -38,7 +38,7 @@ class DimmableLightBulbRGB extends DimmableLightBulbTemp {
         try {
             const satStatus = (await this.hub.getDeviceStatus(this.deviceId))[this.saturationCharacteristicFunction];
             this.logger.debug(`${this.deviceName} - current Hue Saturation value (from device): ${satStatus}`); //debug
-            //this.latestSatValue = satStatus;
+            this.latestSatValue = satStatus;
             return(this.latestSatValue);
         }
         catch (e) {
@@ -60,14 +60,21 @@ class DimmableLightBulbRGB extends DimmableLightBulbTemp {
     }
     async getHue() {
         try {
+            //const isOn = (await this.hub.getDeviceStatus(this.deviceId))[this.onOffCharacteristicFunction];
+            
             const xyStatus = (await this.hub.getDeviceStatus(this.deviceId))[this.colorCharacteristicFunction];
-            //const hueStatus = (await this.hub.getDeviceStatus(this.deviceId))[this.hueCharacteristicFunction];
-            this.logger.debug(`${this.deviceName} - current xy value (from device): ${xyStatus}`); //debug
+            const hueStatus = (await this.hub.getDeviceStatus(this.deviceId))[this.hueCharacteristicFunction];
+            this.logger(`${this.deviceName} - Get - current xy value (from device): ${xyStatus}`); //debug
             //this.logger(`${this.deviceName} - current Hue value (from device): ${hueStatus}`); //debug
-            let hsl = myColorTools.deserialize_yxy_to_hsl(xyStatus);
-            //this.logger(`Current values for ${this.deviceName}: ${hsl}`);
-            this.latestHueValue = hsl[0];
-            this.logger.debug(`${this.deviceName} - current Hue value: ${this.latestHueValue}`);
+            if (xyStatus > 0) {
+                let hsl = this.hub.deserialize_yxy_to_hsl(xyStatus);
+                this.logger(`${this.deviceName} - Get - Current HSL values: ${hsl}`);
+                this.latestHueValue = hsl[0];
+                this.logger(`${this.deviceName} - Get - current Hue value: ${this.latestHueValue}`);
+            }
+            else {
+                this.latestHueValue = 1;
+            }
             return this.latestHueValue;
         }
         catch (e) {
@@ -77,13 +84,15 @@ class DimmableLightBulbRGB extends DimmableLightBulbTemp {
     }
     async setHue(newValue) {
         try {
-            this.logger.debug(`${this.deviceName} - current value for hue: ${this.lastHueValue}`);
-            this.logger(`${this.deviceName} - value for hue changed: ${newValue}`);
+            
+            this.logger(`${this.deviceName} - previous value for hue: ${this.latestHueValue}`);
+            this.logger(`${this.deviceName} - new value for hue changed: ${newValue}`);
             //see usr/local/homebridge/node_modules/hap-nodejs/dist/lib/definitions/ServiceDefinitions.js
             let hsl = [newValue,this.latestSatValue,this.latestLightValue];
-            let deviceValue = myColorTools.serialize_hsl_to_yxy(hsl);
-
+            let deviceValue = this.hub.serialize_hsl_to_yxy(hsl);
+            this.latestHueValue = newValue;
             await this.hub.updateDevice(this.deviceId, this.colorCharacteristicFunction, deviceValue);
+            //await this.hub.updateDevice(this.deviceId, this.hueCharacteristicFunction, deviceValue);
         }
         catch (e) {
             this.platform.logger(`Error changing hue for ${this.deviceName}: ${e}`);

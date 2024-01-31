@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.KAKUPlatform = void 0;
 const Hub = require("./Hub");
 const {LightBulb} = require("./LightBulb");
+const {Switch} = require("./Switch");
 const {Shutter} = require("./Shutter");
 const {TempSensor} = require("./TempSensor");
 const {HumSensor} = require("./HumSensor");
@@ -74,6 +75,7 @@ class KAKUPlatform {
      * @param deviceType The device type, this is stored in device json as followed: data->module->device
      * but also stored as device key in the device object itself (see Hub.ts)
      * @private
+     * ignoring anything that is not a receiver
      */
     createDevice(accessory, deviceType) {
         switch (deviceType) {
@@ -81,13 +83,13 @@ class KAKUPlatform {
             break;
           case 1: // 1 is on/off switch
             new LightBulb(this, accessory);
+            //to do: create settings to choose display as swtich or as lightbulb per item
             break;
           case 2: // 2 is dimmer switch
             new Dimmer(this, accessory);
             break;
           case 3: // 3 is shutter switch (up/down)
             new Shutter(this, accessory);
-            //new LightBulb(this, accessory);
             break;
           case 4: // 4 is motion sensor
             new MotionSensor(this, accessory);
@@ -116,6 +118,9 @@ class KAKUPlatform {
           case 40: // 40 is a zigbee lightbulb
             new LightBulb(this, accessory);
             break;
+          case 41: // 41 is a zigbee switched wall plug
+            new Switch(this, accessory);
+            break;
           case 43: // 43 is zigbee smoke sensor
             new SmokeSensor(this, accessory);
             break;
@@ -141,7 +146,7 @@ class KAKUPlatform {
             // Create the accessory
             if (existingAccessory) {
                 this.createDevice(existingAccessory, device['device']);
-                this.logger.info(`Loaded device from cache: ${existingAccessory.context.name}: ${device['device']}`);
+                this.logger.info(`Loaded device from cache: ${existingAccessory.context.name}, type: ${device['device']}`);
             }
             else {
                 const deviceName = device['name'];
@@ -150,7 +155,7 @@ class KAKUPlatform {
                 accessory.context.device = device;
                 accessory.context.name = deviceName;
                 this.createDevice(accessory, device['device']);
-                this.logger.info(`Loaded new device: ${deviceName}: ${device['device']}`);
+                this.logger.info(`Loaded new device: ${deviceName}, type: ${device['device']}`);
                 this.api.registerPlatformAccessories(settings.PLUGIN_NAME, settings.PLATFORM_NAME, [accessory]);
             }
         }

@@ -9,6 +9,7 @@ const url = require("url");
 const Cryptographer = require("./Cryptographer");
 const dgram = __importDefault(require("dgram"));
 const Command = require("./Command");
+const convertColor = require("color-convert"); //npm module
 class Hub {
     /**
      * Creates a Hub for easy communication with the ics-2000
@@ -164,13 +165,14 @@ class Hub {
      * @param on Whether you want to turn the device on or off
      * @param onFunction The function used to turn the device on or off
      */
-    turnDeviceOnOff(deviceId, on, onFunction = 0) {
+    turnDeviceOnOff(deviceId, on, onFunction) {
         if (!this.localAddress) {
             throw new Error('Local address is undefined');
         }
         const command = this.createCommand(deviceId, onFunction, on ? 1 : 0);
         return command.sendTo(this.localAddress, 2012);
     }
+
     /**
      * Creates a command to dim a device and sends it to the ics-2000 ip address stored in this class
      * @param deviceId The id of the device tou want tot dim
@@ -245,6 +247,67 @@ class Hub {
             throw new Error(responseJson[0].toString());
         }
     }
+    
+    cvrt(r,g,b) {
+        const cv = convert.rgb.hex(r, g, b);
+        return cv.toString;
+    }
+
+    deserialize_yxy_to_hsl(v) {
+        
+        const MAX_UINT_16 = Math.pow(2,16)-1;
+       
+        let buffer = new Uint32Array(1).buffer;
+        let dataView = new DataView(buffer);
+        dataView.setUint32(0,v); //load value onto array
+        let x = dataView.getUint16(0)/MAX_UINT_16;
+        let y = dataView.getUint16(2)/MAX_UINT_16;
+        const Y = 100;  //default 100, but how to get correct value?
+
+        let myX = (x * Y) / y;
+        let myY = Y;
+        let myZ = ((1.0-x-y)*Y) / y;
+        let stepRGB = convertColor.xyz.rgb(myX,myY,myZ);
+        //console.log(stepRGB[0],stepRGB[1],stepRGB[2]);
+        return convertColor.rgb.hsl(stepRGB[0],stepRGB[1],stepRGB[2]);
+    }
+    
+    serialize_hsl_to_yxy(hsl) {
+        //transform hsl from homekit to KAKU device specific code Yxy based code
+        const MAX_UINT_16 = Math.pow(2,16)-1;
+        let buffer = new Uint32Array(1).buffer;
+        let dataView = new DataView(buffer);
+        console.log(hsl);
+        let stepRGB = convertColor.hsl.rgb(hsl[0],hsl[1],hsl[2]);
+        //console.log('RGB:' + stepRGB);
+        let xyz = convertColor.rgb.xyz.raw(stepRGB[0],stepRGB[1],stepRGB[2]);
+        console.log('xyz:' + xyz);
+        var myX = xyz[0];
+        var myY = xyz[1];
+        var myZ = xyz[2];
+        
+        let Y = myY / (myZ+myY+myZ);
+        let x = myX / (myX+myY+myZ);
+        let y = myY;
+        
+        console.log (y,x, Y);
+        
+        let p1 = Math.trunc(x * MAX_UINT_16);
+        let p2 = Math.trunc(Y * MAX_UINT_16);
+        
+        //console.log (p1,p2);
+        
+        //dataView.setUint16(0,p1*100);
+        //dataView.setUint16(2,p2*100);
+        dataView.setUint16(0,p1);
+        dataView.setUint16(2,p2);
+        let deviceValue = dataView.getUint32(0)
+        console.log('sending to device: ' +  deviceValue);
+        return deviceValue;
+
+    }
+    
+    
 }
 exports.Hub = Hub;
 //# sourceMappingURL=Hub.js.map

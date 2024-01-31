@@ -40,7 +40,7 @@ class DimmableLightBulbTemp extends DimmableLightBulb {
             var displayValue = Math.min(100,Math.round(newValue / 6)); //convert to scale of device
             //if (deviceValue !== currentDimValue) {
             this.logger.debug(`${this.deviceName} - Light Temperature changed to ` + displayValue + ` %`);
-            await this.hub.changeDevice(this.deviceId, 9, newValue);
+            await this.hub.updateDevice(this.deviceId, 9, newValue);
             //}
         }
         catch (e) {
