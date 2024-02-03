@@ -19,7 +19,7 @@ class Hub {
      * @param localBackupAddress Optionally, you can pass the ip address of your ics-2000
      * in case it can't be automatically found in the network
      */
-    constructor(email, password, deviceBlacklist = [], localBackupAddress) {
+    constructor(email, password, deviceBlacklist = [], localBackupAddress,logger) {
         this.email = email;
         this.password = password;
         this.deviceBlacklist = deviceBlacklist;
@@ -259,10 +259,11 @@ class Hub {
        
         let buffer = new Uint32Array(1).buffer;
         let dataView = new DataView(buffer);
+        
         dataView.setUint32(0,v); //load value onto array
         let x = dataView.getUint16(0)/MAX_UINT_16;
         let y = dataView.getUint16(2)/MAX_UINT_16;
-        const Y = 100;  //default 100, but how to get correct value?
+        const Y = 1;  //default 100, but how to get correct value?
 
         let myX = (x * Y) / y;
         let myY = Y;
@@ -273,27 +274,31 @@ class Hub {
     }
     
     serialize_hsl_to_yxy(hsl) {
-        //transform hsl from homekit to KAKU device specific code Yxy based code
+        //transform hsl from homekit to KAKU device specific  Yxy based code
         const MAX_UINT_16 = Math.pow(2,16)-1;
         let buffer = new Uint32Array(1).buffer;
         let dataView = new DataView(buffer);
-        console.log(hsl);
+        //console.log('HSL:' +hsl);
         let stepRGB = convertColor.hsl.rgb(hsl[0],hsl[1],hsl[2]);
         //console.log('RGB:' + stepRGB);
         let xyz = convertColor.rgb.xyz.raw(stepRGB[0],stepRGB[1],stepRGB[2]);
-        console.log('xyz:' + xyz);
+        //console.log('xyz:' + xyz);
         var myX = xyz[0];
         var myY = xyz[1];
         var myZ = xyz[2];
         
-        let Y = myY / (myZ+myY+myZ);
-        let x = myX / (myX+myY+myZ);
-        let y = myY;
+        //let Y = myY; // brightness
+        //let x = 100 * (myX / (myX+myY+myZ));
+        //let y = 100 * (myY / (myX+myY+myZ));
         
-        console.log (y,x, Y);
+        let Y = myY/100; // brightness
+        let x = (myX / (myX+myY+myZ));
+        let y = (myY / (myX+myY+myZ));
+        
+        //console.log('xyY: ' + x, y, Y);
         
         let p1 = Math.trunc(x * MAX_UINT_16);
-        let p2 = Math.trunc(Y * MAX_UINT_16);
+        let p2 = Math.trunc(y * MAX_UINT_16);
         
         //console.log (p1,p2);
         
@@ -302,7 +307,7 @@ class Hub {
         dataView.setUint16(0,p1);
         dataView.setUint16(2,p2);
         let deviceValue = dataView.getUint32(0)
-        console.log('sending to device: ' +  deviceValue);
+        //console.log('sending to de0vice: ' +  deviceValue);
         return deviceValue;
 
     }

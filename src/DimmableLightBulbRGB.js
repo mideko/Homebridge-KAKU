@@ -37,7 +37,7 @@ class DimmableLightBulbRGB extends DimmableLightBulbTemp {
     async getSat() {
         try {
             const satStatus = (await this.hub.getDeviceStatus(this.deviceId))[this.saturationCharacteristicFunction];
-            this.logger.debug(`${this.deviceName} - current Hue Saturation value (from device): ${satStatus}`); //debug
+            //this.logger.debug(`${this.deviceName} - current Hue Saturation value (from device): ${satStatus}`); //debug
             this.latestSatValue = satStatus;
             return(this.latestSatValue);
         }
@@ -50,7 +50,7 @@ class DimmableLightBulbRGB extends DimmableLightBulbTemp {
         try {
             const deviceValue = newSatValue;
             this.latestSatValue = newSatValue;
-            this.logger(`${this.deviceName} - value for saturation changed: ${newSatValue}`);
+            //this.logger.debug(`${this.deviceName} - value for saturation changed: ${newSatValue}`);
             await this.hub.updateDevice(this.deviceId, this.saturationCharacteristicFunction, this.latestSatValue);
         }
         catch (e) {
@@ -64,13 +64,13 @@ class DimmableLightBulbRGB extends DimmableLightBulbTemp {
             
             const xyStatus = (await this.hub.getDeviceStatus(this.deviceId))[this.colorCharacteristicFunction];
             const hueStatus = (await this.hub.getDeviceStatus(this.deviceId))[this.hueCharacteristicFunction];
-            this.logger(`${this.deviceName} - Get - current xy value (from device): ${xyStatus}`); //debug
+            //this.logger(`${this.deviceName} - Get - current xy value (from device): ${xyStatus}`); //debug
             //this.logger(`${this.deviceName} - current Hue value (from device): ${hueStatus}`); //debug
             if (xyStatus > 0) {
                 let hsl = this.hub.deserialize_yxy_to_hsl(xyStatus);
-                this.logger(`${this.deviceName} - Get - Current HSL values: ${hsl}`);
+                //this.logger.debug(`${this.deviceName} - Get - Current HSL values: ${hsl}`);
                 this.latestHueValue = hsl[0];
-                this.logger(`${this.deviceName} - Get - current Hue value: ${this.latestHueValue}`);
+                //this.logger.debug(`${this.deviceName} - Get - current Hue value: ${this.latestHueValue}`);
             }
             else {
                 this.latestHueValue = 1;
@@ -85,8 +85,8 @@ class DimmableLightBulbRGB extends DimmableLightBulbTemp {
     async setHue(newValue) {
         try {
             
-            this.logger(`${this.deviceName} - previous value for hue: ${this.latestHueValue}`);
-            this.logger(`${this.deviceName} - new value for hue changed: ${newValue}`);
+            //this.logger.debug(`${this.deviceName} - previous value for hue: ${this.latestHueValue}`);
+            //this.logger.debug(`${this.deviceName} - new value for hue changed: ${newValue}`);
             //see usr/local/homebridge/node_modules/hap-nodejs/dist/lib/definitions/ServiceDefinitions.js
             let hsl = [newValue,this.latestSatValue,this.latestLightValue];
             let deviceValue = this.hub.serialize_hsl_to_yxy(hsl);
