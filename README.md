@@ -53,4 +53,4 @@ Add the following entries to the platforms section:
  After setting this up in Homebridge, you may want to assign the new KAKU items to rooms
 
  ## Known Issues
-- Color wheels are notiously tricky (due to different color mappings) so still needs some work
+- Color wheels are notoriously tricky (due to different color mappings) so still needs some work
