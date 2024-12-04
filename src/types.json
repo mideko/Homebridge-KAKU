@@ -1,0 +1,351 @@
+{
+    "types":
+    [
+        {
+            "id": "0",
+            "type": "n.a.",
+            "mode": "receive",
+            "connect": "basic",
+            "supported": false
+        },
+        {
+            "id": "1",
+            "type": "On/Off switch",
+            "mode": "receive",
+            "connect": "basic",
+            "supported": true
+        },
+        {
+            "id": "2",
+            "type": "Dimmer switch",
+            "mode": "receive",
+            "connect": "basic",
+            "supported": true
+        },
+        {
+            "id": "3",
+            "type": "Shutter switch",
+            "mode": "receive",
+            "connect": "basic",
+            "supported": true
+        },
+        {
+            "id": "4",
+            "type": "Motion sensor",
+            "mode": "send",
+            "connect": "basic",
+            "supported": true
+        },
+        {
+            "id": "5",
+            "type": "n.a.",
+            "mode": "receive",
+            "connect": "basic",
+            "supported": false
+        },
+        {
+            "id": "6",
+            "type": "n.a.",
+            "mode": "receive",
+            "connect": "basic",
+            "supported": false
+        },
+        {
+            "id": "7",
+            "type": "Switch (send)",
+            "mode": "send",
+            "connect": "basic",
+            "supported": false
+        },
+        {
+            "id": "8",
+            "type": "n.a.",
+            "mode": "receive",
+            "connect": "basic",
+            "supported": false
+        },
+        {
+            "id": "9",
+            "type": "n.a.",
+            "mode": "receive",
+            "connect": "basic",
+            "supported": false
+        },
+        {
+            "id": "10",
+            "type": "n.a.",
+            "mode": "receive",
+            "connect": "basic",
+            "supported": false
+        },
+        {
+            "id": "11",
+            "type": "n.a.",
+            "mode": "receive",
+            "connect": "basic",
+            "supported": false
+        },
+        {
+            "id": "12",
+            "type": "Remote",
+            "mode": "send",
+            "connect": "basic",
+            "supported": false
+        },
+        {
+            "id": "13",
+            "type": "n.a.",
+            "mode": "receive",
+            "connect": "basic",
+            "supported": false
+        },
+        {
+            "id": "14",
+            "type": "n.a.",
+            "mode": "receive",
+            "connect": "basic",
+            "supported": false
+        },
+        {
+            "id": "15",
+            "type": "Dusk sensor",
+            "mode": "send",
+            "connect": "basic",
+            "supported": false
+        },
+        {
+            "id": "16",
+            "type": "Remote (dimmer)",
+            "mode": "send",
+            "connect": "basic",
+            "supported": false
+        },
+        {
+            "id": "17",
+            "type": "n.a.",
+            "mode": "receive",
+            "connect": "basic",
+            "supported": false
+        },
+        {
+            "id": "18",
+            "type": "n.a.",
+            "mode": "receive",
+            "connect": "basic",
+            "supported": false
+        },
+        {
+            "id": "19",
+            "type": "n.a.",
+            "mode": "receive",
+            "connect": "basic",
+            "supported": false
+        },
+        {
+            "id": "20",
+            "type": "n.a.",
+            "mode": "receive",
+            "connect": "basic",
+            "supported": false
+        },
+        {
+            "id": "21",
+            "type": "n.a.",
+            "mode": "receive",
+            "connect": "basic",
+            "supported": false
+        },
+        {
+            "id": "22",
+            "type": "n.a.",
+            "mode": "receive",
+            "connect": "basic",
+            "supported": false
+        },
+        {
+            "id": "23",
+            "type": "n.a.",
+            "mode": "receive",
+            "connect": "basic",
+            "supported": false
+        },
+        {
+            "id": "24",
+            "type": "n.a.",
+            "mode": "receive",
+            "connect": "basic",
+            "supported": false
+        },
+        {
+            "id": "25",
+            "type": "n.a.",
+            "mode": "receive",
+            "connect": "basic",
+            "supported": false
+        },
+        {
+            "id": "26",
+            "type": "n.a.",
+            "mode": "receive",
+            "connect": "basic",
+            "supported": false
+        },
+        {
+            "id": "27",
+            "type": "n.a.",
+            "mode": "receive",
+            "connect": "basic",
+            "supported": false
+        },
+        {
+            "id": "28",
+            "type": "n.a.",
+            "mode": "receive",
+            "connect": "basic",
+            "supported": false
+        },
+        {
+            "id": "29",
+            "type": "n.a.",
+            "mode": "receive",
+            "connect": "basic",
+            "supported": false
+        },
+        {
+            "id": "30",
+            "type": "n.a.",
+            "mode": "receive",
+            "connect": "basic",
+            "supported": false
+        },
+        {
+            "id": "31",
+            "type": "n.a.",
+            "mode": "receive",
+            "connect": "basic",
+            "supported": false
+        },
+        {
+            "id": "32",
+            "type": "n.a.",
+            "mode": "receive",
+            "connect": "basic",
+            "supported": false
+        },
+        {
+            "id": "33",
+            "type": "n.a.",
+            "mode": "receive",
+            "connect": "basic",
+            "supported": false
+        },
+        {
+            "id": "34",
+            "type": "Lightbulb (dimmable)",
+            "mode": "receive",
+            "connect": "zigbee",
+            "supported": true
+        },
+        {
+            "id": "35",
+            "type": "Color lightbulb (dimmable)",
+            "mode": "receive",
+            "connect": "zigbee",
+            "supported": true
+        },
+        {
+            "id": "36",
+            "type": "Color lightbulb (dimmable, temperature)",
+            "mode": "receive",
+            "connect": "zigbee",
+            "supported": true
+        },
+        {
+            "id": "37",
+            "type": "n.a.",
+            "mode": "receive",
+            "connect": "basic",
+            "supported": false
+        },
+        {
+            "id": "38",
+            "type": "n.a.",
+            "mode": "receive",
+            "connect": "basic",
+            "supported": false
+        },
+        {
+            "id": "39",
+            "type": "n.a.",
+            "mode": "receive",
+            "connect": "basic",
+            "supported": false
+        },
+        {
+            "id": "40",
+            "type": "Lightbulb",
+            "mode": "receive",
+            "connect": "zigbee",
+            "supported": true
+        },
+        {
+            "id": "41",
+            "type": "Wall plug",
+            "mode": "receive",
+            "connect": "zigbee",
+            "supported": true
+        },
+        {
+            "id": "42",
+            "type": "n.a.",
+            "mode": "receive",
+            "connect": "basic",
+            "supported": false
+        },
+        {
+            "id": "43",
+            "type": "Smoke sensor",
+            "mode": "send",
+            "connect": "zigbee",
+            "supported": true
+        },
+        {
+            "id": "44",
+            "type": "n.a.",
+            "mode": "send",
+            "connect": "zigbee",
+            "supported": false
+        },
+        {
+            "id": "45",
+            "type": "n.a.",
+            "mode": "send",
+            "connect": "zigbee",
+            "supported": false
+        },
+        {
+            "id": "46",
+            "type": "Temperature / Humidity sensor",
+            "mode": "send",
+            "connect": "zigbee",
+            "supported": true
+        },
+        {
+            "id": "47",
+            "type": "n.a.",
+            "mode": "send",
+            "connect": "zigbee",
+            "supported": false
+        },
+        {
+            "id": "48",
+            "type": "Group (dimmable)",
+            "mode": "receive",
+            "connect": "basic",
+            "supported": false
+        }
+        
+
+    ]
+}
+

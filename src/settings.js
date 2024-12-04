@@ -10,4 +10,4 @@ exports.PLATFORM_NAME = 'KAKU-ICS2000-PLUS';
  */
 exports.PLUGIN_NAME = 'homebridge-kaku-ics2000-plus';
 exports.RELOAD_SWITCH_NAME = 'Reload Switch';
-//# sourceMappingURL=settings.js.map
+
