@@ -3,9 +3,9 @@
     [
         {
             "id": "0",
-            "type": "n.a.",
-            "mode": "receive",
-            "connect": "basic",
+            "type": "ignore",
+            "mode": "n.a.",
+            "connect": "n.a.",
             "supported": false
         },
         {
@@ -38,10 +38,10 @@
         },
         {
             "id": "5",
-            "type": "n.a.",
-            "mode": "receive",
+            "type": "paired scenes [custom device]",
+            "mode": "run",
             "connect": "basic",
-            "supported": false
+            "supported": true
         },
         {
             "id": "6",
@@ -178,8 +178,8 @@
         },
         {
             "id": "25",
-            "type": "n.a.",
-            "mode": "receive",
+            "type": "Switch",
+            "mode": "send",
             "connect": "basic",
             "supported": false
         },
@@ -241,21 +241,21 @@
         },
         {
             "id": "34",
-            "type": "Lightbulb (dimmable)",
+            "type": "Light (dimmable)",
             "mode": "receive",
             "connect": "zigbee",
             "supported": true
         },
         {
             "id": "35",
-            "type": "Color lightbulb (dimmable)",
+            "type": "Light (color, dimmable)",
             "mode": "receive",
             "connect": "zigbee",
             "supported": true
         },
         {
             "id": "36",
-            "type": "Color lightbulb (dimmable, temperature)",
+            "type": "Light (color, dimmable, temperature)",
             "mode": "receive",
             "connect": "zigbee",
             "supported": true
@@ -283,7 +283,7 @@
         },
         {
             "id": "40",
-            "type": "Lightbulb",
+            "type": "Light",
             "mode": "receive",
             "connect": "zigbee",
             "supported": true
@@ -343,9 +343,14 @@
             "mode": "receive",
             "connect": "basic",
             "supported": false
+        },
+        {
+            "id": "99",
+            "type": "scene",
+            "mode": "run",
+            "connect": "basic",
+            "supported": false
         }
-        
-
     ]
 }
 

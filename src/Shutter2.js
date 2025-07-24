@@ -33,7 +33,6 @@ class Shutter {
 
     /**
      * Handle requests to get the current value of the "Current Position" characteristic
-     *Error discovering devices: TypeError: Cannot read properties of undefined (reading 'CurrentDoorState')
      */
    async handleCurrentPositionGet() {
        this.logger.debug('Triggered GET Current Door State');
@@ -43,6 +42,15 @@ class Shutter {
        const currentValue = (1 - status)*100;
        return currentValue;
     }
+    
+    async handleTargetPositionGet() {
+        this.logger.debug('Triggered GET Target Door State');
+        const status = (await this.hub.getDeviceStatus(this.deviceId))[this.openCloseCharacteristicFunction];
+        this.logger(`Current state for ${this.deviceName}: ${status}`);
+        // set this to a valid value for CurrentPosition
+        const targetValue = (1 - status)*100;
+        return targetValue;
+     }
 
     /**
      * Handle requests to set the "Target Position" characteristic
@@ -51,23 +59,3 @@ class Shutter {
       this.logger.debug('Triggered GET State Position');
       const stateValue = this.platform.Characteristic.PositionState.STOPPED;
       return stateValue;
-    }
-
-    /**
-     * Handle requests to get the "Target Position" characteristic
-     */
-    async handleTargetPositionGet() {
-        this.logger.debug('Triggered GET TargetPosition');
-        const status = (await this.hub.getDeviceStatus(this.deviceId))[this.openCloseCharacteristicFunction];
-        const targetValue = (1-status)*100;
-        return targetValue;
-    }
-    
-    async handleTargetPositionSet(value) {
-        this.logger.debug('Triggered SET TargetPosition:' + value);
-        const targetValue = (value > 0) ? 0 : 1;
-        await this.hub.turnDeviceOnOff(this.deviceId, targetValue, this.openCloseCharacteristicFunction);
-    }
-}
-exports.Shutter = Shutter;
-//

@@ -10,23 +10,23 @@ class DimmableLightBulb extends LightBulb {
         this.dimCharacteristicFunction = 4; //4
         //this.colorCharacteristicFunction = 5; //not implemented here
         //this.lighttempCharacteristicFunction = 6; //not implemented here
+        // KAKU uses a value from 0 to 255 for the dim value, but we set 0-100 as min en max values, because it looks better
         this.service.getCharacteristic(this.platform.Characteristic.Brightness)
             .onGet(this.getBrightness.bind(this))
             .onSet(this.changeBrightness.bind(this))
-            // KAKU uses a value from 0 to 255 for the dim value, so we set 0-100 as min en max values, because it looks better
             .setProps({
                 minValue: 0,
-                maxValue: 255,
+                maxValue: 100,
                 });
 
-    }
+    }1
     async getBrightness() {
         try {
-            const status = (await this.hub.getDeviceStatus(this.deviceId))[this.dimCharacteristicFunction];
-            this.logger.debug(`${this.deviceName} - current Brightness for : ${status}`);
-            var nice_status = Math.round(status / 255)*100; //transform to scale 1-100
-            //this.logger(`Current brightness for ${this.deviceName}: ${nice_status}`);
-            return Math.min(status,255);
+            let device_value = (await this.hub.getDeviceStatus(this.deviceId))[this.dimCharacteristicFunction];
+            this.logger.debug(`${this.deviceName} - current brightness from device: ${device_value}`);
+            let nice_status = Math.round((device_value / 255)*100); //transform to scale 1-100
+            this.logger.debug(`${this.deviceName} - current brightness: ${nice_status} %`);
+            return Math.min(nice_status,100);
         }
         catch (e) {
             this.logger.error(`Error getting brightness for ${this.deviceName}: ${e}`);
@@ -35,12 +35,8 @@ class DimmableLightBulb extends LightBulb {
     }
     async changeBrightness(newValue) { //usr/local/homebridge/node_modules/hap-nodejs/dist/lib/definitions/ServiceDefinitions.js
         try {
-            this.logger.debug(`${this.deviceName} - Brightness changed: ${newValue}`);
-            //const currentDimValue = (await this.hub.getDeviceStatus(this.deviceId))[this.dimCharacteristicFunction];
-            var displayValue = Math.min(100,Math.round(newValue / 2.55)); //convert to scale of device
-            //if (deviceValue !== currentDimValue) {
-            this.logger(`${this.deviceName}- Brightness changed to ` + displayValue + ` %`);
-            await this.hub.dimDevice(this.deviceId, 4, newValue);
+            this.logger.debug(`${this.deviceName} - Brightness changed to ` + newValue + ` %`);
+            await this.hub.dimDevice(this.deviceId, 4, Math.round(newValue*2.55));
             //}
         }
         catch (e) {

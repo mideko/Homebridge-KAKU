@@ -20,20 +20,21 @@ class LightBulb {
             .setCharacteristic(this.platform.Characteristic.SerialNumber, this.deviceId.toString());
         this.service = this.accessory.getService(this.platform.Service.Lightbulb) || this.accessory.addService(this.platform.Service.Lightbulb);
         this.service.getCharacteristic(this.platform.Characteristic.On)
-            .onSet(this.setOn.bind(this))
-            .onGet(this.getOn.bind(this));
+            .onSet(this.setOnOff.bind(this))
+            .onGet(this.getOnOff.bind(this));
     }
-    async setOn(newValue) {
+    async setOnOff(newState) {
         try {
-            const newState = newValue;
-            const currentState = this.service.getCharacteristic(this.platform.Characteristic.On).value;
-            this.logger.debug('Current state is ' + currentState);
+            let newValue = newState ? 1: 0;
+            this.accessory.context.switchState = newState ? "ON": "OFF";
+            let currentValue = this.service.getCharacteristic(this.platform.Characteristic.On).value;
+            this.platform.logger.debug(`${this.deviceName} - Current ON/OFF value is ${currentValue}`);
             // Only send a command to the ics-2000 if the state is changed
             // The is necessary, otherwise dimming a light doesn't work because HomeKit sends an on command and a dim command at the same time
             // And the ics-2000 can't handle multiple messages received at the same time
-            if (newState !== currentState) {
+            if (newValue !== currentValue) {
                 await this.hub.turnDeviceOnOff(this.deviceId, newValue, this.onOffCharacteristicFunction);
-                this.platform.logger(`Changed state to ${newValue} on ${this.deviceName}`);
+                this.platform.logger.info(`${this.deviceName} - Changed state to ${this.accessory.context.switchState}`);
             }
         }
         catch (e) {
@@ -41,12 +42,14 @@ class LightBulb {
             throw new this.platform.api.hap.HapStatusError(-70402); /* SERVICE_COMMUNICATION_FAILURE */
         }
     }
-    async getOn() {
+    async getOnOff() {
         try {
             // Get status for this device
-            const status = (await this.hub.getDeviceStatus(this.deviceId))[this.onOffCharacteristicFunction];
-            this.platform.logger.debug(`Current state for ${this.deviceName}: ${status}`);
-            return status;
+            let status = (await this.hub.getDeviceStatus(this.deviceId))[this.onOffCharacteristicFunction];
+            this.accessory.context.switchState = status == 1 ? "ON": "OFF";
+            this.platform.logger.debug(`${this.deviceName} - Current state: ${this.accessory.context.switchState}`);
+            let currentState = status == 1 ? true: false;
+            return currentState;
         }
         catch (e) {
             this.platform.logger.error(`Error getting state for ${this.deviceName}: ${e}`);
@@ -55,7 +58,7 @@ class LightBulb {
     }
 }
 exports.LightBulb = LightBulb;
-//# sourceMappingURL=LightBulb.js.map
+
 
 /*
 public static final int INDEX COLOR HUE_TRANSITION = 12;

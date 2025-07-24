@@ -29,23 +29,20 @@ class Shutter {
 
     /**
      * Handle requests to get the current value of the "Current Position" characteristic
-     *Error discovering devices: TypeError: Cannot read properties of undefined (reading 'CurrentDoorState')
      */
    async handleCurrentDoorStateGet() {
-       this.logger.debug('Triggered GET Current Door State');
-       const status = (await this.hub.getDeviceStatus(this.deviceId))[this.openCloseCharacteristicFunction];
-       this.logger.debug(`Current state for ${this.deviceName}: ${status}`);
+       let status = (await this.hub.getDeviceStatus(this.deviceId))[this.openCloseCharacteristicFunction];
+       this.logger.debug(`${this.deviceName} - Current state: ${status}`);
        // set this to a valid value for CurrentPosition
-       const currentValue = 1 - status;
+       let currentValue = 1 - status;
        return currentValue;
     }
 
     async handleTargetDoorStateGet() {
-        this.logger.debug('Triggered GET Target Door State');
-        const status = (await this.hub.getDeviceStatus(this.deviceId))[this.openCloseCharacteristicFunction];
-        this.logger.debug(`Current state for ${this.deviceName}: ${status}`);
+        let status = (await this.hub.getDeviceStatus(this.deviceId))[this.openCloseCharacteristicFunction];
+        this.logger.debug(`${this.deviceName} - Target state: ${status}`);
         // set this to a valid value for CurrentPosition
-        const targetValue = status;
+        let targetValue = 1 - status;
         return targetValue;
      }
 
@@ -54,8 +51,9 @@ class Shutter {
      */
     async handleTargetDoorStateSet(value) {
         this.logger.debug('Triggered SET TargetPosition:' + value);
-        const targetValue = 1 - parseInt(value);
+        let targetValue = 1 - parseInt(value);
         await this.hub.turnDeviceOnOff(this.deviceId, targetValue, this.openCloseCharacteristicFunction);
+        //this.service.getCharacteristic(this.platform.Characteristic.CurrentDoorState).updateValue(targetValue);
     }
 }
 exports.Shutter = Shutter;

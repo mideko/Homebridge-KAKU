@@ -10,6 +10,7 @@ const Cryptographer = require("./Cryptographer");
 const dgram = __importDefault(require("dgram"));
 const Command = require("./Command");
 const convertColor = require("color-convert"); //npm module
+
 class Hub {
     /**
      * Creates a Hub for easy communication with the ics-2000
@@ -19,13 +20,16 @@ class Hub {
      * @param localBackupAddress Optionally, you can pass the ip address of your ics-2000
      * in case it can't be automatically found in the network
      */
-    constructor(email, password, deviceBlacklist = [], localBackupAddress,logger) {
+    constructor(email, password, deviceBlacklist = [], localBackupAddress,logger,config) {
         this.email = email;
         this.password = password;
+        this.config = config;
+        this.scenes = config.scenes;
         this.deviceBlacklist = deviceBlacklist;
         this.localBackupAddress = localBackupAddress;
         this.baseUrl = 'https://trustsmartcloud2.com/ics2000_api';
         this.devices = [];
+        this.logger = logger;
         this.localAddress = localBackupAddress;
     }
     /**
@@ -38,8 +42,11 @@ class Hub {
             password_hash: this.password,
             device_unique_id: 'android',
             platform: '',
-            mac: '',
+            mac: ''
         });
+        //console.log(params);
+        //console.log(`${this.baseUrl}/account.php`);
+        
         const request = await (0, node_fetch.default)(`${this.baseUrl}/account.php`, {
             method: 'POST',
             body: params,
@@ -48,6 +55,7 @@ class Hub {
             throw new Error('Username/ password combination incorrect');
         }
         const responseJson = await request.json();
+        //console.log(responseJson);
         if (request.ok && responseJson['homes'].length > 0) {
             const home = responseJson['homes'][0];
             this.aesKey = home['aes_key'];
@@ -58,7 +66,7 @@ class Hub {
         }
     }
     /**
-     * Pulls the list of devices connected to your ics-2000 from the serer
+     * Pulls the list of devices connected to your ics-2000 from the server
      * Stores the list of devices in this class and returns it
      */
     async pullDevices() {
@@ -86,6 +94,19 @@ class Hub {
             this.devices = responseJson.filter(device => {
                 const deviceId = Number(device['id']);
                 const data = device['data'];
+
+                //this.logger.info(data);
+                if ('module' in data) {
+                    //this.logger.info(device);
+                    //this.logger.info(data['module']['info']);
+                }
+                if ('scenario' in data) {
+                    //this.logger.info(device);
+                    //this.logger.info(data['scenario']['if']);
+                    //this.logger.info(data['scenario']['entities']);
+                    //this.logger.info(data['scenario']['smd_info']);
+                }
+                //this.logger.info(device);
                 if (this.deviceBlacklist.includes(deviceId)) {
                     return false;
                 }
@@ -97,10 +118,19 @@ class Hub {
                     const functionSum = data['module']['info'].reduce((a, b) => a + b, 0);
                     return functionSum > 0;
                 }
-                else if ('group' in data) {
-                    // change group key name to module so a group is treated as a device
-                    device['data']['module'] = device['data']['group'];
-                    delete device['data']['group'];
+                else if ('scene' in data) {
+                    const sceneName = device['data']['scene']['name'];
+                    device['data']['module'] = device['data']['scene'];
+                    //device['data']['module']['device'] = 0;
+                    //this.logger.info(device['data']['scene']['name']);
+                    let scenePair = this.scenes.filter(item => item.valueON === sceneName || item.valueOFF === sceneName);
+                    //this.logger.info(scenePair);
+                    if (scenePair.length=0) {
+                            // change scene key name to module so a scene is treated as a device
+                            //not a scene pair so add as individual device
+                            device['data']['module']['device'] = 1;
+                            delete device['data']['scene'];
+                    }
                     return true;
                 }
                 return false;
@@ -111,6 +141,7 @@ class Hub {
                 device['name'] = device['data']['module']['name'];
                 device['device'] = device['data']['module']['device'];
             });
+            
             return this.devices;
         }
         else {
@@ -287,10 +318,6 @@ class Hub {
         var myY = xyz[1];
         var myZ = xyz[2];
         
-        //let Y = myY; // brightness
-        //let x = 100 * (myX / (myX+myY+myZ));
-        //let y = 100 * (myY / (myX+myY+myZ));
-        
         let Y = myY/100; // brightness
         let x = (myX / (myX+myY+myZ));
         let y = (myY / (myX+myY+myZ));
@@ -300,14 +327,10 @@ class Hub {
         let p1 = Math.trunc(x * MAX_UINT_16);
         let p2 = Math.trunc(y * MAX_UINT_16);
         
-        //console.log (p1,p2);
-        
-        //dataView.setUint16(0,p1*100);
-        //dataView.setUint16(2,p2*100);
         dataView.setUint16(0,p1);
         dataView.setUint16(2,p2);
         let deviceValue = dataView.getUint32(0)
-        //console.log('sending to de0vice: ' +  deviceValue);
+        //console.log('sending to device: ' +  deviceValue);
         return deviceValue;
 
     }

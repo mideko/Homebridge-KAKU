@@ -23,17 +23,18 @@ class Switch {
             .onSet(this.doSet.bind(this))
             .onGet(this.doGet.bind(this));
     }
-    async doSet(newValue) {
+    async doSet(newState) {
         try {
-            const newState = newValue;
-            const currentState = this.service.getCharacteristic(this.platform.Characteristic.On).value;
-            this.logger.debug('Current state is ' + currentState);
+            let newValue = newState ? 1: 0;
+            this.accessory.context.switchState =newState ? "ON": "OFF";
+            let currentState = this.service.getCharacteristic(this.platform.Characteristic.On).value;
+            this.logger.debug(`${this.deviceName} - Current state: ${currentState}`);
             // Only send a command to the ics-2000 if the state is changed
             // The is necessary, otherwise dimming a light doesn't work because HomeKit sends an on command and a dim command at the same time
             // And the ics-2000 can't handle multiple messages received at the same time
             if (newState !== currentState) {
                 await this.hub.turnDeviceOnOff(this.deviceId, newValue, this.onOffCharacteristicFunction);
-                this.platform.logger(`Changed state to ${newValue} on ${this.deviceName}`);
+                this.platform.logger(`${this.deviceName} - Changed state to ${this.accessory.context.switchState}`);
             }
         }
         catch (e) {
@@ -44,9 +45,11 @@ class Switch {
     async doGet() {
         try {
             // Get status for this device
-            const status = (await this.hub.getDeviceStatus(this.deviceId))[this.onOffCharacteristicFunction];
-            this.platform.logger.debug(`Current state for ${this.deviceName}: ${status}`);
-            return status;
+            let status = (await this.hub.getDeviceStatus(this.deviceId))[this.onOffCharacteristicFunction];
+            this.accessory.context.switchState = status == 1  ? "ON": "OFF";
+            this.platform.logger.debug(`${this.deviceName} - current state: ${this.accessory.context.switchState}`);
+            let currentState = status == 1 ? true: false;
+            return currentState;
         }
         catch (e) {
             this.platform.logger.error(`Error getting state for ${this.deviceName}: ${e}`);

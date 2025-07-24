@@ -25,7 +25,7 @@ class MotionSensor {
         this.service.getCharacteristic(this.platform.Characteristic.MotionDetected)
             .onGet(this.handleMotionDetectedGet.bind(this));
         //this.service.getCharacteristic(this.platform.Characteristic.StatusLowBattery)
-        //    .onGet(this.handleBatteryStatusGet.bind(this));
+        //   .onGet(this.handleBatteryStatusGet.bind(this));
     }
     /**
      * Handle requests to get the current value of the "Motion Detected" characteristic
@@ -33,9 +33,9 @@ class MotionSensor {
     async handleMotionDetectedGet() {
         try {
             // Get status for this device
-            var detectionValue = (await this.hub.getDeviceStatus(this.deviceId))[this.motionCharacteristicFunction];
+            let detectionValue = (await this.hub.getDeviceStatus(this.deviceId))[this.motionCharacteristicFunction];
             this.logger.debug(`Current state for ${this.deviceName}: ${detectionValue}`);
-            const detectedState = (parseInt(detectionValue) === 1) ? true : false; //create boolean
+            let detectedState = (parseInt(detectionValue) === 1) ? true : false; //create boolean
             return detectedState;
         }
         catch (e) {
@@ -46,9 +46,9 @@ class MotionSensor {
     async handleBatteryStatusGet() {
         try {
             // Get status for this device
-            var batteryValue = (await this.hub.getDeviceStatus(this.deviceId))[this.batteryCharacteristicFunction];
-            this.platform.logger.debug(`Current battery level for ${this.deviceName}: ${batteryValue}`);
-            const returnState = (batteryValue < 20) ? this.platform.Characteristic.StatusLowBattery.BATTERY_LEVEL_LOW : this.platform.Characteristic.StatusLowBattery.BATTERY_LEVEL_NORMAL
+            let batteryValue = (await this.hub.getDeviceStatus(this.deviceId))[this.batteryCharacteristicFunction];
+            this.platform.logger.info(`Current battery level for ${this.deviceName}: ${batteryValue}`);
+            let returnState = (batteryValue < 20) ? this.platform.Characteristic.StatusLowBattery.BATTERY_LEVEL_LOW : this.platform.Characteristic.StatusLowBattery.BATTERY_LEVEL_NORMAL
             return returnState;
         }
         catch (e) {

@@ -6,9 +6,9 @@ class DimmableLightBulbTemp extends DimmableLightBulb {
     constructor(platform, accessory) {
         super(platform, accessory);
         // The Function for turning a dimmable lightbulb on or off is 3
-        this.onOffCharacteristicFunction = 3;
-        this.dimCharacteristicFunction = 4; //4
-        this.colorCharacteristicFunction = 5; //not implemented
+        //this.onOffCharacteristicFunction = 3;
+        //this.dimCharacteristicFunction = 4; //4
+        //this.colorCharacteristicFunction = 5; //not implemented
         this.lightTempCharacteristicFunction = 9; //yes
         this.service.getCharacteristic(this.platform.Characteristic.ColorTemperature)
             .onGet(this.getColorTemp.bind(this))
@@ -22,9 +22,9 @@ class DimmableLightBulbTemp extends DimmableLightBulb {
     }
     async getColorTemp() {
         try {
-            const status = (await this.hub.getDeviceStatus(this.deviceId))[this.lightTempCharacteristicFunction];
+            let status = (await this.hub.getDeviceStatus(this.deviceId))[this.lightTempCharacteristicFunction];
             this.logger.debug(`${this.deviceName} - Current light temperature: ${status}`);
-            var nice_status = Math.round(status / 6); //transform to scale 1-100
+            let nice_status = Math.round(status / 6); //transform to scale 1-100
             //this.logger(`Current brightness for ${this.deviceName}: ${nice_status}`);
             return Math.min(status,600);
         }
@@ -37,7 +37,7 @@ class DimmableLightBulbTemp extends DimmableLightBulb {
         try {
             this.logger.debug(`${this.deviceName} - Light Temperature (input): ${newValue}`);
             //const currentDimValue = (await this.hub.getDeviceStatus(this.deviceId))[this.dimCharacteristicFunction];
-            var displayValue = Math.min(100,Math.round(newValue / 6)); //convert to scale of device
+            let displayValue = Math.min(100,Math.round(newValue / 6)); //convert to scale of device
             //if (deviceValue !== currentDimValue) {
             this.logger.debug(`${this.deviceName} - Light Temperature changed to ` + displayValue + ` %`);
             await this.hub.updateDevice(this.deviceId, 9, newValue);

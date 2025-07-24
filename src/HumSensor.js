@@ -27,7 +27,7 @@ class HumSensor {
     async getSensorHumidity() {
         try {
             // Get status for this device
-            const status = (await this.hub.getDeviceStatus(this.deviceId))[this.humCharacteristicFunction]/100;
+            let status = (await this.hub.getDeviceStatus(this.deviceId))[this.humCharacteristicFunction]/100;
             this.platform.logger.debug(`Current humidity for ${this.deviceName}: ${status}`);
             return status;
         }
