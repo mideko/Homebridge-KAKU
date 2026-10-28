@@ -95,7 +95,7 @@ class Hub {
                 const deviceId = Number(device['id']);
                 const data = device['data'];
 
-                //this.logger.info(data);
+                //this.logger.debug(data);
                 if ('module' in data) {
                     //this.logger.info(device);
                     //this.logger.info(data['module']['info']);
@@ -120,13 +120,12 @@ class Hub {
                 }
                 else if ('scene' in data) {
                     const sceneName = device['data']['scene']['name'];
+                    // change scene key name to module so a scene is treated as a device
                     device['data']['module'] = device['data']['scene'];
-                    //device['data']['module']['device'] = 0;
-                    //this.logger.info(device['data']['scene']['name']);
+                    //check if scene is listed in config as part of pair
                     let scenePair = this.scenes.filter(item => item.valueON === sceneName || item.valueOFF === sceneName);
                     //this.logger.info(scenePair);
                     if (scenePair.length=0) {
-                            // change scene key name to module so a scene is treated as a device
                             //not a scene pair so add as individual device
                             device['data']['module']['device'] = 1;
                             delete device['data']['scene'];

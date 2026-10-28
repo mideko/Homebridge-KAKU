@@ -28,7 +28,12 @@ class HumSensor {
         try {
             // Get status for this device
             let status = (await this.hub.getDeviceStatus(this.deviceId))[this.humCharacteristicFunction]/100;
-            this.platform.logger.debug(`Current humidity for ${this.deviceName}: ${status}`);
+            this.platform.logger.debug(`${this.deviceName} - Current humidity:  ${status}`);
+            //publish into MQ if present
+            const { mqtt } = this.platform.config;
+            if (mqtt) {
+                this.platform.publisher.publishJSON("Humidity", status);
+            }
             return status;
         }
         catch (e) {

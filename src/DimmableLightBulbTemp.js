@@ -44,7 +44,7 @@ class DimmableLightBulbTemp extends DimmableLightBulb {
             //}
         }
         catch (e) {
-            this.logger(`Error changing brightness for ${this.deviceName}: ${e}`);
+            this.logger.error(`Error changing brightness for ${this.deviceName}: ${e}`);
             throw new this.platform.api.hap.HapStatusError(-70402 /* SERVICE_COMMUNICATION_FAILURE */);
         }
     }

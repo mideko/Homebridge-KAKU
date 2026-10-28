@@ -1,8 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.DimmableLightBulb = void 0;
-const {LightBulb} = require("./LightBulb");
-class DimmableLightBulb extends LightBulb {
+const {Light} = require("./Light");
+class DimmableLightBulb extends Light {
     constructor(platform, accessory) {
         super(platform, accessory);
         // The Function for turning a dimmable zigbee lightbulb on or off is 3

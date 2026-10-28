@@ -5,7 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.KAKUPlatform = void 0;
 const Hub = require("./Hub");
-const {LightBulb} = require("./LightBulb");
+const {Light} = require("./Light");
 const {Switch} = require("./Switch");
 const {Shutter} = require("./Shutter");
 const {TempSensor} = require("./TempSensor");
@@ -17,14 +17,13 @@ const {DimmableLightBulb} = require("./DimmableLightBulb");
 const {DimmableLightBulbTemp} = require("./DimmableLightBulbTemp");
 const {DimmableLightBulbRGB} = require("./DimmableLightBulbRGB");
 const {Dimmer} = require("./Dimmer");
+const {Outlet} = require("./Outlet");
 const {Pushbutton} = require("./Pushbutton");
 const ReloadSwitch = require("./ReloadSwitch");
 const node_schedule = __importDefault(require("node-schedule"));
 const KAKU_devices = require("./types.json");
-//publish to MQTT
+//publish to MQTT (experimental)
 const publisher_1 = require("./publisher");
-
-
 
 class KAKUPlatform {
     constructor(logger, config, api) {
@@ -37,7 +36,12 @@ class KAKUPlatform {
         this.Characteristic = this.api.hap.Characteristic;
         this.cachedAccessories = [];
         this.logger.debug('Finished initializing platform:', this.config.name);
-        this.publisher = new publisher_1.Publisher(config.mqtt, KAKU_devices, this.logger);
+        const { mqtt } = config;
+        if (mqtt) {
+            this.publisher = new publisher_1.Publisher(config.mqtt, KAKU_devices, this.logger);
+        } else {
+            this.logger.info('No MQTT config, so skipping Publisher.');
+        }
         
         //this.logger.info(KAKU_devices);
         const { email, password } = config;
@@ -98,10 +102,10 @@ class KAKUPlatform {
           case 0: //0 = ignore
             break;
           case 1: // 1 is on/off switch
-            new LightBulb(this, accessory);
+            new Light(this, accessory);
             //to do: create settings to choose display as switch or as lightbulb per item
             break;
-          case 2: // 2 is dimmer switch
+          case 2: // 2 is dimmer switch (wall)
             new Dimmer(this, accessory);
             break;
           case 3: // 3 is shutter switch (up/down)
@@ -135,10 +139,10 @@ class KAKUPlatform {
             new DimmableLightBulbTemp(this, accessory);
             break;
           case 40: // 40 is a zigbee lightbulb
-            new LightBulb(this, accessory);
+            new Light(this, accessory);
             break;
           case 41: // 41 is a zigbee switched wall plug
-            new Switch(this, accessory);
+            new Outlet(this, accessory);
             break;
           case 43: // 43 is zigbee smoke sensor
             new SmokeSensor(this, accessory);
@@ -148,7 +152,7 @@ class KAKUPlatform {
             new HumSensor(this, accessory);
             break;
           default: // assume it is a lightbulb
-            new LightBulb(this, accessory);
+            new Light(this, accessory);
         }
     }
     async discoverDevices() {
@@ -158,20 +162,21 @@ class KAKUPlatform {
         const hubIp = await this.hub.discoverHubLocal(10000, this.logger);
         this.logger.info(`Found hub: ${hubIp}`);
         this.logger.info('Pulling devices from the server');
-        const foundDevices = await this.hub.pullDevices();
+        let foundDevices = await this.hub.pullDevices();
         this.logger.info(`Found ${foundDevices.length} devices`);
         //refresh scenes from config
         this.scenes = this.config.scenes;
         //this.logger.info(this.scenes);
-        for (const device of foundDevices) {
+        //this.logger.debug(this.cachedAccessories);
+        for (let device of foundDevices) {
 
             //prepare data for scenes to be paired to one switch
-            const data = device['data'];
+            let data = device['data'];
             //this.logger.info(device);
             if ('scene' in data) {
                 device['device'] = 0; //ignore unless....
-                const sceneName = device['data']['scene']['name'];
-                const scene_idx = this.scenes.findIndex(item => item.valueON === sceneName || item.valueOFF === sceneName);
+                let sceneName = device['data']['scene']['name'];
+                let scene_idx = this.scenes.findIndex(item => item.valueON === sceneName || item.valueOFF === sceneName);
                 //this.logger.info(sceneName, scene_idx);
                 if (scene_idx != -1) {
                     // match found
@@ -185,12 +190,13 @@ class KAKUPlatform {
                         //both id's present, use this device as accessory
                         device['device'] = 5;
                         device['name'] = this.scenes[scene_idx].name;
+                        device['id]'] = this.scenes[scene_idx].idON;
                         //this.logger.info(this.scenes[scene_idx].idON + " - " + this.scenes[scene_idx].idOFF);
                     }
                 }
             } // end of scene in data
             let uuid = this.api.hap.uuid.generate(device['id']);
-            const existingAccessory = this.cachedAccessories.find(accessory => accessory.UUID === uuid);
+            let existingAccessory = this.cachedAccessories.find(accessory => accessory.UUID === uuid);
             //find the device type reference info
           
             let type_idx = KAKU_devices.types.findIndex(item => item.id == device.device);
@@ -210,13 +216,13 @@ class KAKUPlatform {
                 
                 let deviceName = device['name'];
                 if (device['device'] > 0) {
-                    const accessory = new this.api.platformAccessory(deviceName, uuid);
+                    let accessory = new this.api.platformAccessory(deviceName, uuid);
                     // store a copy of the device object in the `accessory.context`
                     accessory.context.device = device;
                     accessory.context.name = deviceName;
                 
                     if (device['device'] == 5 ) {
-                        const scene_idx = this.scenes.findIndex((item) => item.name === deviceName);
+                        let scene_idx = this.scenes.findIndex((item) => item.name === deviceName);
                         //save id's of scenes to use for switch
                         accessory.context.sceneON = this.scenes[scene_idx].idON;
                         accessory.context.sceneOFF = this.scenes[scene_idx].idOFF;
@@ -224,7 +230,7 @@ class KAKUPlatform {
                     //this.logger.info(accessory.context);
                     if (KAKU_devices.types[type_idx].supported) {
                         this.createDevice(accessory, device['device']);
-                        this.logger.info(`Loaded new device: ${deviceName}, type: ${device['device']} - ` + KAKU_devices.types[device.device].type);
+                        this.logger.info(`Added new device: ${deviceName}, type: ${device['device']} - ` + KAKU_devices.types[device.device].type);
                         this.api.registerPlatformAccessories(settings.PLUGIN_NAME, settings.PLATFORM_NAME, [accessory]);
                     }
                     else {
@@ -244,7 +250,7 @@ class KAKUPlatform {
      */
     createReloadSwitch() {
         let uuid = this.api.hap.uuid.generate(settings.RELOAD_SWITCH_NAME);
-        const existingAccessory = this.cachedAccessories.find(accessory => accessory.UUID === uuid);
+        let existingAccessory = this.cachedAccessories.find(accessory => accessory.UUID === uuid);
         if (existingAccessory) {
             new ReloadSwitch.ReloadSwitch(this, existingAccessory);
         }

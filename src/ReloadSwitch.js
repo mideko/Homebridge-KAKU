@@ -10,7 +10,7 @@ class ReloadSwitch {
          * @private
          */
         this.getState = () => false;
-        this.service = this.accessory.getService(this.platform.Service.Lightbulb) || this.accessory.addService(this.platform.Service.Lightbulb);
+        this.service = this.accessory.getService(this.platform.Service.Switch) || this.accessory.addService(this.platform.Service.Switch);
         this.service.getCharacteristic(this.platform.Characteristic.On)
             .onGet(this.getState.bind(this))
             .onSet(this.reload.bind(this));
@@ -21,6 +21,10 @@ class ReloadSwitch {
      */
     async reload() {
         this.platform.logger.info('Reload switch pressed');
+        const { mqtt } = this.platform.config;
+        if (mqtt) {
+            this.platform.publisher.publishJSON("ICS-2000 Link", "Reload");
+        }
         await this.platform.setup();
     }
 }

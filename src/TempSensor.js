@@ -10,7 +10,7 @@ class TempSensor {
         this.accessory = accessory;
         // The index the status for on/off is stored and the function to use when you turn a device on/off
         this.tempCharacteristicFunction = 4; // temperature
-        //this.humCharacteristicFunction = 5; // humidity?
+        //this.humCharacteristicFunction = 11; // humidity
         this.batteryCharacteristicFunction = 3; //1-200 scale
         this.deviceData = accessory.context.device;
         this.deviceName = accessory.context.name;
@@ -25,13 +25,21 @@ class TempSensor {
             .onGet(this.getSensorTemp.bind(this));
         this.service.getCharacteristic(this.platform.Characteristic.StatusLowBattery)
             .onGet(this.handleBatteryStatusGet.bind(this));
+        
     }
 
     async getSensorTemp() {
         try {
             // Get status for this device
-            const status = (await this.hub.getDeviceStatus(this.deviceId))[this.tempCharacteristicFunction]/100;
-            this.platform.logger.debug(`Current temperature for ${this.deviceName}: ${status}`);
+            let status = (await this.hub.getDeviceStatus(this.deviceId))[this.tempCharacteristicFunction]/100;
+            //let tstatus = (await this.hub.getDeviceStatus(this.deviceId));
+            //this.platform.logger.debug(tstatus);
+            this.platform.logger.debug(` ${this.deviceName} - Current temperature:  ${status}`);
+            //publish into MQ if present
+            const { mqtt } = this.platform.config;
+            if (mqtt) {
+                this.platform.publisher.publishJSON("Temperature", status);
+            }
             return status;
         }
         catch (e) {
@@ -42,10 +50,12 @@ class TempSensor {
     
     async handleBatteryStatusGet() {
         try {
-            // Get status for this device
-            var batteryValue = (await this.hub.getDeviceStatus(this.deviceId))[this.batteryCharacteristicFunction];
-            this.platform.logger.debug(`Current battery level for ${this.deviceName}: ${batteryValue}`);
-            const returnState = (batteryValue < 20) ? this.platform.Characteristic.StatusLowBattery.BATTERY_LEVEL_LOW : this.platform.Characteristic.StatusLowBattery.BATTERY_LEVEL_NORMAL
+            // Get battery level for this device (range 0-255 ?)
+            let batteryValue = (await this.hub.getDeviceStatus(this.deviceId))[this.batteryCharacteristicFunction];
+            this.platform.logger.debug(`${this.deviceName} - Current battery level:  ${batteryValue}`);
+            let returnState = (batteryValue < 20) ? this.platform.Characteristic.StatusLowBattery.BATTERY_LEVEL_LOW : this.platform.Characteristic.StatusLowBattery.BATTERY_LEVEL_NORMAL
+            if (batteryValue < 20) {
+                this.platform.logger.warn(`${this.deviceName} - Current battery level is LOW`);}
             return returnState;
         }
         catch (e) {

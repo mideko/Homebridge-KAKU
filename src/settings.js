@@ -4,10 +4,10 @@ exports.RELOAD_SWITCH_NAME = exports.PLUGIN_NAME = exports.PLATFORM_NAME = void 
 /**
  * This is the name of the platform that users will use to register the plugin in the Homebridge config.json
  */
-exports.PLATFORM_NAME = 'KAKU-ICS2000-PLUS';
+exports.PLATFORM_NAME = 'KAKU-ICS2000-LINK';
 /**
  * This must match the name of your plugin as defined the package.json
  */
-exports.PLUGIN_NAME = 'homebridge-kaku-ics2000-plus';
+exports.PLUGIN_NAME = 'homebridge-kaku-ics2000-link';
 exports.RELOAD_SWITCH_NAME = 'Reload Switch';
 

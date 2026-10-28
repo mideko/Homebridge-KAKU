@@ -116,7 +116,7 @@ class DimmableLightBulbRGB extends DimmableLightBulbTemp {
 
         }
         catch (e) {
-            this.platform.logger(`Error changing hue for ${this.deviceName}: ${e}`);
+            this.platform.logger.error(`Error changing hue for ${this.deviceName}: ${e}`);
             throw new this.platform.api.hap.HapStatusError(-70402); /* SERVICE_COMMUNICATION_FAILURE */
         }
     }

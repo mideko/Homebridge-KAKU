@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Pushbutton = void 0;
 /**
- * This class is a button linked to two scenes, one for On and one for OFF
+ * This class is a button linked to two KAKU scenes, one for On and one for OFF
  */
 class Pushbutton {
     constructor(platform, accessory) {
@@ -22,6 +22,7 @@ class Pushbutton {
         
         this.accessory.getService(this.platform.Service.AccessoryInformation)
             .setCharacteristic(this.platform.Characteristic.Manufacturer, 'Klik Aan Klik Uit')
+            .setCharacteristic(this.platform.Characteristic.Model, 'Virtual-Scene')
             .setCharacteristic(this.platform.Characteristic.SerialNumber, this.deviceId.toString());
         this.service = this.accessory.getService(this.platform.Service.Switch) || this.accessory.addService(this.platform.Service.Switch);
         this.service.getCharacteristic(this.platform.Characteristic.On)
@@ -29,7 +30,10 @@ class Pushbutton {
             .onGet(this.doGet.bind(this));
         
         //subscribe to MQTT topic for state updates
-        this.subscribe(this.deviceName);
+        const { mqtt } = this.platform.config;
+        if (mqtt) {
+            this.subscribe(this.deviceName);
+        }
 
         
     }
@@ -47,12 +51,16 @@ class Pushbutton {
     //handle message from MQTT (callback)
     async messenger(thisDevice,topic,payload) {
         try {
-            //update device state based on MGTT trigger 
-            thisDevice.service.getCharacteristic(thisDevice.platform.Characteristic.On).updateValue(payload.state);
-            thisDevice.deviceId = payload.state ? Number(thisDevice.sceneON) : Number(thisDevice.sceneOFF);
-            await thisDevice.hub.turnDeviceOnOff(thisDevice.deviceId, 1, thisDevice.runCharacteristicFunction);
-            thisDevice.accessory.context.lastValue = payload.state;
-            thisDevice.logger.info(`${topic} is set to ${payload.state}`);
+            thisDevice.logger.debug(`MQTT: ${topic} was set to ${payload}`);
+            if (payload != thisDevice.accessory.context.lastValue ) {
+                //update device state based on MGTT trigger
+                thisDevice.service.getCharacteristic(thisDevice.platform.Characteristic.On).updateValue(payload);
+                //determine which scene to run
+                thisDevice.deviceId = payload ? Number(thisDevice.sceneON) : Number(thisDevice.sceneOFF);
+                await thisDevice.hub.turnDeviceOnOff(thisDevice.deviceId, 1, thisDevice.runCharacteristicFunction);
+                thisDevice.accessory.context.lastValue = payload;
+                thisDevice.logger.info(`MQTT triggered scene ${thisDevice.accessory.context.name} - ${payload}`);
+            }
         }
         catch (e) {
             thisDevice.logger.error(`Error in messenger of ${topic}: ${e}`);
@@ -63,12 +71,14 @@ class Pushbutton {
     async doSet(newValue) {
         try {
             // run scene
-            //this.platform.logger(newValue);
+            this.accessory.context.lastValue = newValue; //use this state for Get later
             this.deviceId = newValue ? Number(this.sceneON) : Number(this.sceneOFF);
             await this.hub.turnDeviceOnOff(this.deviceId, 1, this.runCharacteristicFunction);
-            //publish into MQ
-            this.platform.publisher.publishJSON(this.deviceName, { state: newValue});
-            this.accessory.context.lastValue = newValue; //use this state for Get later
+            //publish into MQ if present
+            const { mqtt } = this.platform.config;
+            if (mqtt) {
+                this.platform.publisher.publishJSON(this.deviceName, newValue);
+            }
             this.platform.logger.info(`Started scene ${this.deviceName} - ${newValue}`);
             }
 

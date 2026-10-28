@@ -33,9 +33,12 @@ class SmokeSensor {
     async handleSmokeDetectedGet() {
         try {
             // Get status for this device
-            var detectionValue = (await this.hub.getDeviceStatus(this.deviceId))[this.smokeCharacteristicFunction];
-            this.platform.logger.debug(`Current state for ${this.deviceName}: ${detectionValue}`);
-            const returnState = 1 - parseInt(detectionValue);
+            //SMOKE_NOT_DETECTED    Characteristic.SmokeDetected.SMOKE_NOT_DETECTED    0
+            //SMOKE_DETECTED    Characteristic.SmokeDetected.SMOKE_DETECTED    1
+
+            let detectionValue = (await this.hub.getDeviceStatus(this.deviceId))[this.smokeCharacteristicFunction];
+            let returnState = 1 - parseInt(detectionValue);
+            this.platform.logger.debug(`${this.deviceName} - Current state is: ${returnState}`);
             return returnState;
         }
         catch (e) {
@@ -46,9 +49,9 @@ class SmokeSensor {
     async handleBatteryStatusGet() {
         try {
             // Get status for this device
-            var batteryValue = (await this.hub.getDeviceStatus(this.deviceId))[this.batteryCharacteristicFunction];
-            this.platform.logger.debug(`Current battery level for ${this.deviceName}: ${batteryValue}`);
-            const returnState = (batteryValue < 20) ? this.platform.Characteristic.StatusLowBattery.BATTERY_LEVEL_LOW : this.platform.Characteristic.StatusLowBattery.BATTERY_LEVEL_NORMAL
+            let batteryValue = (await this.hub.getDeviceStatus(this.deviceId))[this.batteryCharacteristicFunction];
+            this.platform.logger.debug(`${this.deviceName} - Current battery level is: ${batteryValue}`);
+            let returnState = (batteryValue < 25) ? this.platform.Characteristic.StatusLowBattery.BATTERY_LEVEL_LOW : this.platform.Characteristic.StatusLowBattery.BATTERY_LEVEL_NORMAL
             return returnState;
         }
         catch (e) {

@@ -29,13 +29,15 @@ class Switch {
             this.accessory.context.switchState =newState ? "ON": "OFF";
             let currentState = this.service.getCharacteristic(this.platform.Characteristic.On).value;
             this.logger.debug(`${this.deviceName} - Current state: ${currentState}`);
-            // Only send a command to the ics-2000 if the state is changed
-            // The is necessary, otherwise dimming a light doesn't work because HomeKit sends an on command and a dim command at the same time
-            // And the ics-2000 can't handle multiple messages received at the same time
-            if (newState !== currentState) {
+
+            //if (newState !== currentState) {
+                const { mqtt } = this.platform.config;
+                if (mqtt) {
+                    this.platform.publisher.publishJSON(this.deviceName, newValue);
+                }
                 await this.hub.turnDeviceOnOff(this.deviceId, newValue, this.onOffCharacteristicFunction);
                 this.platform.logger(`${this.deviceName} - Changed state to ${this.accessory.context.switchState}`);
-            }
+            //}
         }
         catch (e) {
             this.platform.logger.error(`Error changing state for ${this.deviceName}: ${e}`);
@@ -46,6 +48,9 @@ class Switch {
         try {
             // Get status for this device
             let status = (await this.hub.getDeviceStatus(this.deviceId))[this.onOffCharacteristicFunction];
+            if (mqtt) {
+                this.platform.publisher.publishJSON(this.deviceName, status);
+            }
             this.accessory.context.switchState = status == 1  ? "ON": "OFF";
             this.platform.logger.debug(`${this.deviceName} - current state: ${this.accessory.context.switchState}`);
             let currentState = status == 1 ? true: false;
