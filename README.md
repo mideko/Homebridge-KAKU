@@ -1,4 +1,4 @@
-# Homebridge-KAKU-ICS2000-PLUS
+# Homebridge-KAKU-ICS2000-LINK
 homebridge module for KlikAanKlikUit / CoCo / Trust ICS-2000
 
 Building on the great work of Youri Dijk.
