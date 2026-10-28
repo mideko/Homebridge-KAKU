@@ -46,7 +46,7 @@ Add the following entries to the platforms section:
 | `name` | Must be `ICS2000` | N/A |
 | `email` | Your email adress used to login to the ICS unit | N/A |
 | `password` | Password to log on to the ICS unit | N/A |
-| `platform` | Must be "KAKU-ICS2000-PLUS" | N/A |
+| `platform` | Must be "KAKU-ICS2000-LINK" | N/A |
 
  
  ### Configuration in Homekit
