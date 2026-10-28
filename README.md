@@ -19,7 +19,7 @@ Tested on IOS 14.
 ## Installation
 
 1. Install [homebridge](https://github.com/homebridge/homebridge#installation)
-2. Install this plugin: `npm install -g homebridge-kaku-ics2000-plus`
+2. Install this plugin: `npm install -g homebridge-kaku-ics2000-link`
 3. Update your `config.json` file (see below)
 
 ## Dependencies
@@ -35,7 +35,7 @@ Add the following entries to the platforms section:
         "name": "ICS2000",
         "email": "your_email@adres",
         "password": "_____",
-        "platform": "KAKU-ICS2000-PLUS"
+        "platform": "KAKU-ICS2000-LINK"
     }
 ]
 ```
