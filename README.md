@@ -1,4 +1,4 @@
-# Homebridge-KAKU-ICS2000-LINK
+# Homebridge-KAKU-ICS2000-Plus
 homebridge module for KlikAanKlikUit / CoCo / Trust ICS-2000
 
 Building on the great work of Youri Dijk.
@@ -19,7 +19,7 @@ Tested on IOS 14.
 ## Installation
 
 1. Install [homebridge](https://github.com/homebridge/homebridge#installation)
-2. Install this plugin: `npm install -g homebridge-kaku-ics2000-link`
+2. Install this plugin: `npm install -g homebridge-kaku-ics2000-plus`
 3. Update your `config.json` file (see below)
 
 ## Dependencies
@@ -35,7 +35,7 @@ Add the following entries to the platforms section:
         "name": "ICS2000",
         "email": "your_email@adres",
         "password": "_____",
-        "platform": "KAKU-ICS2000-LINK"
+        "platform": "KAKU-ICS2000-PLUS"
     }
 ]
 ```
@@ -46,7 +46,7 @@ Add the following entries to the platforms section:
 | `name` | Must be `ICS2000` | N/A |
 | `email` | Your email adress used to login to the ICS unit | N/A |
 | `password` | Password to log on to the ICS unit | N/A |
-| `platform` | Must be "KAKU-ICS2000-LINK" | N/A |
+| `platform` | Must be "KAKU-ICS2000-PLUS" | N/A |
 
  
  ### Configuration in Homekit
